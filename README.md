@@ -123,6 +123,18 @@ data/cedar/forgery/<user_id>/*.png
 - Input: latent vector, z ∈ R 100
 - Linear projection → reshape
 - ConvTranspose layers with BatchNorm + ReLU
+- Architecture:
+```text
+  [z (100)]
+  └─ Linear(100 → 512×8×8) + BatchNorm + ReLU
+      └─ Unflatten → (512, 8, 8)
+          └─ ConvTranspose2d(512 → 256, k=4, s=2, p=1) + BatchNorm2d + ReLU
+              └─ Output: (256, 16, 16)
+                  └─ ConvTranspose2d(256 → 128, k=4, s=2, p=1) + BatchNorm2d + ReLU
+                      └─ Output: (128, 32, 32)
+                          └─ ConvTranspose2d(128 → 1, k=4, s=2, p=1) + Tanh
+                              └─ Output: (1, 64, 64)
+```
 - Output: **64×64×1** grayscale image
 - Final activation: ```tanh```
 
@@ -130,6 +142,18 @@ data/cedar/forgery/<user_id>/*.png
 - Input: **64×64×1** image
 - Convolutional layers with stride-based downsampling
 - LeakyReLU activations
+- Architecture:
+```text
+Input Image: (1, 64, 64)
+  └─ Conv2d(1 → 128, k=4, s=2, p=1) + LeakyReLU(0.2)
+      └─ Output: (128, 32, 32)
+          └─ Conv2d(128 → 256, k=4, s=2, p=1) + BatchNorm2d + LeakyReLU(0.2)
+              └─ Output: (256, 16, 16)
+                  └─ Conv2d(256 → 512, k=4, s=2, p=1) + BatchNorm2d + LeakyReLU(0.2)
+                      └─ Output: (512, 8, 8)
+                          └─ Flatten → Linear(512×8×8 → 1) + Sigmoid
+                              └─ Output: P(real)
+```
 - Sigmoid output for real/fake classification
 
 #### Training details
@@ -177,6 +201,7 @@ python src/signature_verifier_train.py
 **Baseline mode (```usegan=False``` in code):**
 - Pairs only real genuine and real forgery signatures.​
 - Trains for 10 epochs and saves ```checkpoints/siamese_baseline.pth```.
+
   ​
 **GAN‑augmented mode (```usegan=True``` in code):**
 - Adds genuine–GAN pairs using signatures from ```generated/generic/``` (or other GAN output).​
@@ -236,8 +261,9 @@ Returns a streaming ZIP of generated signature images.
 
 ## ⚙️ Setup & Installation
 ```bash
-python -m venv venv
-source venv/bin/activate        # macOS / Linux
+python -m venv .venv
+source .venv/bin/activate     #for macos/linux
+.venv\Scripts\activate        #for windows(cmd)
 pip install -r requirements.txt
 ```
 
