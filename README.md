@@ -79,7 +79,7 @@ project2/
 ├── requirements.txt
 └── README.md
 ```
-Note: Large datasets, checkpoints, and generated samples are excluded via .gitignore.
+**Note:** Large datasets, checkpoints, and generated samples are excluded via ```.gitignore```.
 
 ---
 
@@ -105,14 +105,14 @@ flowchart TD
 ## 🧩 Modules & Design
 ### 1) Data Pipeline & Preprocessing
 #### Dataset: CEDAR Offline Signature Dataset
-Images are grayscale and resized to 64×64 (or 128×128 in selected scripts)
-Pixel values normalized to [−1, 1] for tanh compatibility
-Hard binarization and heavy morphological operations are avoided to preserve stroke continuity
+- Images are grayscale and resized to 64×64 (or 128×128 in selected scripts)
+- Pixel values normalized to [−1, 1] for tanh compatibility
+- Hard binarization and heavy morphological operations are avoided to preserve stroke continuity
 #### Dataset preparation:
 ```bash
 python scripts/prepare_cedar.py
 ```
-Creates:
+**Creates:**
 ```bash
 data/cedar/genuine/<user_id>/*.png
 data/cedar/forgery/<user_id>/*.png
@@ -120,92 +120,109 @@ data/cedar/forgery/<user_id>/*.png
 
 ### 2) Vanilla GAN Architecture
 #### Generator
-Input: latent vector, z ∈ R 100
-Linear projection → reshape
-ConvTranspose layers with BatchNorm + ReLU
-Output: 64×64×1 grayscale image
-Final activation: tanh
+- Input: latent vector, z ∈ R 100
+- Linear projection → reshape
+- ConvTranspose layers with BatchNorm + ReLU
+- Output: **64×64×1** grayscale image
+- Final activation: ```tanh```
 
 #### Discriminator
-Input: 64×64×1 image
-Convolutional layers with stride-based downsampling
-LeakyReLU activations
-Sigmoid output for real/fake classification
-Training details
-Loss: Binary Cross-Entropy (BCE)
-Optimizer: Adam (lr = 2e-4, β1 = 0.5, β2 = 0.999)
-Stabilization: label smoothing (real = 0.9), controlled update schedule
+- Input: **64×64×1** image
+- Convolutional layers with stride-based downsampling
+- LeakyReLU activations
+- Sigmoid output for real/fake classification
+
+#### Training details
+- Loss: Binary Cross-Entropy (BCE) for both Generator and Discriminator
+- Optimizer: Adam optimizers (generic: ```lr=2e-4```, ```betas=(0.5, 0.999```); user‑specific fine‑tuning uses smaller lr).
+- Stabilization: Label smoothing (real = 0.9), controlled update schedule
 
 ### 3) Training Pipeline
 #### Generic GAN
-Trained on genuine signatures from multiple users
-Learns global handwriting characteristics
-Used for generic data augmentation
+- Trained on genuine signatures from multiple users
+- Learns global handwriting characteristics
+- Used for generic data augmentation
+```bash
 python src/train_gan_generic.py
-Artifacts:
-Samples: ```samples/generic/```
-Generator: ```checkpoints/generic/generator.pth```
+```
+**Artifacts:**
+- Samples: ```samples/generic/```
+- Generator: ```checkpoints/generic/generator.pth```
 
 #### User-Specific GAN
-One GAN per user
-Initialized from generic generator
-Fine-tuned with smaller batch size and learning rate
-Captures intra-personal signature variation
+- One GAN per user
+- Initialized from generic generator
+- Fine-tuned with smaller batch size and learning rate
+- Captures intra-personal signature variation
 ```bash
 python src/train_gan_user_specific.py
 ```
-Artifacts:
+**Artifacts:**
 Samples: ```samples/user_specific/```
 Generators: ```checkpoints/user_specific/user_XX.pth```
 
 ### 4) Signature Verification Model
-Siamese CNN implemented in siamese_model.py
-Learns a similarity score between two signatures
-Loss: Binary Cross-Entropy
-Pair Construction
-Genuine–Genuine → label 1
-Genuine–Forgery → label 0
-Genuine–GAN → label 1 (augmentation)
+- **Siamese CNN** implemented in ```siamese_model.py```
+- Learns a similarity score between two signatures
+- Loss: Binary Cross-Entropy
+**Pair Construction:**
+- Genuine–Genuine → label 1
+- Genuine–Forgery → label 0
+- Genuine–GAN → label 1 (augmentation)
 Training:
 ```bash
 python src/signature_verifier_train.py
 ```
+Baseline mode (```usegan=False``` in code):
+Pairs only real genuine and real forgery signatures.​
+Trains for 10 epochs and saves ```checkpoints/siamese_baseline.pth```.
+​
+GAN‑augmented mode (```usegan=True``` in code):
+Adds genuine–GAN pairs using signatures from ```generated/generic/``` (or other GAN output).​
+Trains a second model and saves ```checkpoints/siamese_augmented.pth```.​
 
 ### 5) Evaluation & Performance Assessment
-#### Metrics:
-False Acceptance Rate (FAR)
-False Rejection Rate (FRR)
-Equal Error Rate (EER)
-#### Evaluation:
+Metrics:
+- **False Acceptance Rate (FAR)**
+- **False Rejection Rate (FRR)**
+- **Equal Error Rate (EER)**
+Evaluation:
+```bash
 python src/signature_verifier_eval.py
-Results Summary
+```
+- Uses SignaturePairsDataset(data/cedar) and loads a chosen checkpoint.​
+- Computes FAR, FRR, and EER via ```utils/metrics.py``` (ROC curve–based computation).
+**Results Summary**
 Model	FAR ↓	FRR	EER ↓
 Baseline	0.022	0.344	0.024
 GAN-Augmented	0.013	higher	0.00076
-#### Interpretation:
+**Interpretation:**
 GAN-based augmentation significantly reduces EER and FAR, improving verification robustness when genuine samples are scarce. FRR increase reflects a threshold-dependent trade-off.
 
 ### 6) Inference & Tools
-Command-Line Generation
+**Command-Line Generation**
 ```bash
 python src/generate_signatures.py
 ```
-Streamlit UI
+
+**Streamlit UI**
 ```bash
 streamlit run src/app.py
 ```
-Choose Generic or User-Specific GAN
-Select number of signatures (1–50)
-Preview generated outputs
-FastAPI Service
+- Choose Generic or User-Specific GAN
+- Select number of signatures (1–50)
+- Preview generated outputs
+
+**FastAPI Service**
 ```bash
 uvicorn src.api:app --reload
 ```
+
+**POST /generate**
 ```bash
-POST /generate
 {
   "n": 10,
-  "user_id": "user_01"
+  "user_id": "user_01" // optional; generic model used if omitted
 }
 ```
 Returns a streaming ZIP of generated signature images.
@@ -222,41 +239,88 @@ pip install -r requirements.txt
 ---
 
 ## 🧪 Experiments & Findings
-Initial experiments on a non-CEDAR dataset produced noisy and fragmented signatures
-CEDAR-based training yielded cleaner strokes and realistic samples
-User-specific GANs produced higher-quality signatures than generic GANs
-GAN augmentation stabilized Siamese training but introduced FAR/FRR trade-offs dependent on threshold selection
+- Initial experiments on a non-CEDAR dataset produced noisy and fragmented signatures
+- CEDAR-based training yielded cleaner strokes and realistic samples
+- User-specific GANs produced higher-quality signatures than generic GANs
+- GAN augmentation stabilized Siamese training but introduced FAR/FRR trade-offs dependent on threshold selection
 
 ---
 
 ## ⚠️ Limitations
-Uses a basic Vanilla GAN (no DCGAN / WGAN-GP / diffusion models)
-Limited resolution (64×64–128×128)
-Synthetic samples treated as genuine without explicit forgery modeling
-Offline signatures only (no dynamic stroke information)
+- Uses a basic Vanilla GAN (no DCGAN / WGAN-GP / diffusion models)
+- Limited resolution (64×64–128×128)
+- Synthetic samples treated as genuine without explicit forgery modeling
+- Offline signatures only (no dynamic stroke information)
 
 ---
 
 ## 🚀 Future Work
-Conditional GANs (CGAN / ACGAN)
-Higher-resolution signatures (256×256)
-Advanced GAN architectures (DCGAN, StyleGAN)
-Improved verification calibration and operating-point selection
-Online signature modeling
+- Conditional GANs (CGAN / ACGAN)
+- Higher-resolution signatures (256×256)
+- Advanced GAN architectures (DCGAN, StyleGAN)
+- Improved verification calibration and operating-point selection
+- Online signature modeling
 
 ---
 
 ## 👥 Team
-Chennupalli Laxmi Varshitha
-Ishitha Chowdary
-Y. Jhansi
-V. Swarna Blessy
-Md. Muskan
-Likihl Sir Sai
+
+<table>
+  <tr>
+      <td align="center">
+        <a href="https://github.com/ishitachowdary">
+          <img src="https://avatars.githubusercontent.com/ishitachowdary" width="100px;" alt=""/>
+          <br />
+          <sub><b>Ishitha Chowdary</b></sub>
+        </a>
+        <br />
+      </td>
+      <td align="center">
+        <a href="https://github.com/LaxmiVarshithaCH">
+          <img src="https://avatars.githubusercontent.com/LaxmiVarshithaCH" width="100px;" alt=""/>
+          <br />
+          <sub><b>Chennupalli Laxmi Varshitha</b></sub>
+        </a>
+        <br />
+      </td>
+      <td align="center">
+        <a href="#">
+          <img src="https://avatars.githubusercontent.com/LaxmiVarshithaCH" width="100px;" alt=""/>
+          <br />
+          <sub><b>Y. Jhansi</b></sub>
+        </a>
+        <br />
+      </td>
+      <td align="center">
+        <a href="#">
+          <img src="https://avatars.githubusercontent.com/LaxmiVarshithaCH" width="100px;" alt=""/>
+          <br />
+          <sub><b>V. Swarna Blessy</b></sub>
+        </a>
+        <br />
+      </td>
+      <td align="center">
+        <a href="#">
+          <img src="https://avatars.githubusercontent.com/LaxmiVarshithaCH" width="100px;" alt=""/>
+          <br />
+          <sub><b>MD. Muskan</b></sub>
+        </a>
+        <br />
+      </td>
+      <td align="center">
+        <a href="#">
+          <img src="https://avatars.githubusercontent.com/LaxmiVarshithaCH" width="100px;" alt=""/>
+          <br />
+          <sub><b>Likihl Sir Sai</b></sub>
+        </a>
+        <br />
+      </td>
+  </tr>
+</table>
 
 ---
 
 ## 📬 Feedback
-Suggestions and improvements are welcome.
-Feel free to open an issue or submit a pull request.
-Happy coding! 🚀
+- Suggestions and improvements are welcome.
+- Feel free to open an issue or submit a pull request.
+- **Happy coding! 🚀**
