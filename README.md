@@ -177,7 +177,7 @@ python src/signature_verifier_train.py
 **Baseline mode (```usegan=False``` in code):**
 - Pairs only real genuine and real forgery signatures.​
 - Trains for 10 epochs and saves ```checkpoints/siamese_baseline.pth```.
-​
+  ​
 **GAN‑augmented mode (```usegan=True``` in code):**
 - Adds genuine–GAN pairs using signatures from ```generated/generic/``` (or other GAN output).​
 - Trains a second model and saves ```checkpoints/siamese_augmented.pth```.​
@@ -187,18 +187,22 @@ Metrics:
 - **False Acceptance Rate (FAR)**
 - **False Rejection Rate (FRR)**
 - **Equal Error Rate (EER)**
+  
 Evaluation:
 ```bash
 python src/signature_verifier_eval.py
 ```
 - Uses SignaturePairsDataset(data/cedar) and loads a chosen checkpoint.​
 - Computes FAR, FRR, and EER via ```utils/metrics.py``` (ROC curve–based computation).
+  
 **Results Summary**
-Model	FAR ↓	FRR	EER ↓
-Baseline	0.022	0.344	0.024
-GAN-Augmented	0.013	higher	0.00076
+| Model          | FAR ↓ | FRR  | EER ↓  |
+|----------------|-------|------|--------|
+| Baseline       | 0.022 | 0.344 | 0.024  |
+| GAN-Augmented  | 0.013 | higher | 0.00076 |
+
 **Interpretation:**
-GAN-based augmentation significantly reduces EER and FAR, improving verification robustness when genuine samples are scarce. FRR increase reflects a threshold-dependent trade-off.
+GAN-based augmentation significantly reduces **EER and FAR**, improving verification robustness when genuine samples are scarce. FRR increase reflects a threshold-dependent trade-off.
 
 ### 6) Inference & Tools
 **Command-Line Generation**
