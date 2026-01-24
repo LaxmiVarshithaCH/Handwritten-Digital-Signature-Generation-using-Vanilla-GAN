@@ -178,7 +178,7 @@ python src/signature_verifier_train.py
 - Pairs only real genuine and real forgery signatures.​
 - Trains for 10 epochs and saves ```checkpoints/siamese_baseline.pth```.
 ​
-**GAN‑augmented mode** (```usegan=True``` in code):
+**GAN‑augmented mode (```usegan=True``` in code):**
 - Adds genuine–GAN pairs using signatures from ```generated/generic/``` (or other GAN output).​
 - Trains a second model and saves ```checkpoints/siamese_augmented.pth```.​
 
