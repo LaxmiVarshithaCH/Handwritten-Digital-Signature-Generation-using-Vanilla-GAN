@@ -104,29 +104,29 @@ flowchart TD
 
 ## 🧩 Modules & Design
 ### 1) Data Pipeline & Preprocessing
-#### Dataset: CEDAR Offline Signature Dataset
-- Images are grayscale and resized to 64×64 (or 128×128 in selected scripts)
-- Pixel values normalized to [−1, 1] for tanh compatibility
+Dataset: **CEDAR Offline Signature Dataset**
+- Images are grayscale and resized to **64×64**
+- Pixel values normalized to **[−1, 1]** for ```tanh``` compatibility
 - Hard binarization and heavy morphological operations are avoided to preserve stroke continuity
-#### Dataset preparation:
+Dataset preparation:
 ```bash
 python scripts/prepare_cedar.py
 ```
-**Creates:**
+Creates:
 ```bash
 data/cedar/genuine/<user_id>/*.png
 data/cedar/forgery/<user_id>/*.png
 ```
 
 ### 2) Vanilla GAN Architecture
-#### Generator
+**Generator**
 - Input: latent vector, z ∈ R 100
 - Linear projection → reshape
 - ConvTranspose layers with BatchNorm + ReLU
 - Output: **64×64×1** grayscale image
 - Final activation: ```tanh```
 
-#### Discriminator
+**Discriminator**
 - Input: **64×64×1** image
 - Convolutional layers with stride-based downsampling
 - LeakyReLU activations
@@ -138,7 +138,7 @@ data/cedar/forgery/<user_id>/*.png
 - Stabilization: Label smoothing (real = 0.9), controlled update schedule
 
 ### 3) Training Pipeline
-#### Generic GAN
+**Generic GAN**
 - Trained on genuine signatures from multiple users
 - Learns global handwriting characteristics
 - Used for generic data augmentation
@@ -149,7 +149,7 @@ python src/train_gan_generic.py
 - Samples: ```samples/generic/```
 - Generator: ```checkpoints/generic/generator.pth```
 
-#### User-Specific GAN
+**User-Specific GAN**
 - One GAN per user
 - Initialized from generic generator
 - Fine-tuned with smaller batch size and learning rate
