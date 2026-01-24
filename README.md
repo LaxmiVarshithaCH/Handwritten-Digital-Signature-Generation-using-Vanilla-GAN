@@ -158,8 +158,8 @@ python src/train_gan_generic.py
 python src/train_gan_user_specific.py
 ```
 **Artifacts:**
-Samples: ```samples/user_specific/```
-Generators: ```checkpoints/user_specific/user_XX.pth```
+- Samples: ```samples/user_specific/```
+- Generators: ```checkpoints/user_specific/user_XX.pth```
 
 ### 4) Signature Verification Model
 - **Siamese CNN** implemented in ```siamese_model.py```
@@ -169,17 +169,18 @@ Generators: ```checkpoints/user_specific/user_XX.pth```
 - Genuine–Genuine → label 1
 - Genuine–Forgery → label 0
 - Genuine–GAN → label 1 (augmentation)
+  
 Training:
 ```bash
 python src/signature_verifier_train.py
 ```
-Baseline mode (```usegan=False``` in code):
-Pairs only real genuine and real forgery signatures.​
-Trains for 10 epochs and saves ```checkpoints/siamese_baseline.pth```.
+**Baseline mode (```usegan=False``` in code):**
+- Pairs only real genuine and real forgery signatures.​
+- Trains for 10 epochs and saves ```checkpoints/siamese_baseline.pth```.
 ​
-GAN‑augmented mode (```usegan=True``` in code):
-Adds genuine–GAN pairs using signatures from ```generated/generic/``` (or other GAN output).​
-Trains a second model and saves ```checkpoints/siamese_augmented.pth```.​
+**GAN‑augmented mode** (```usegan=True``` in code):
+- Adds genuine–GAN pairs using signatures from ```generated/generic/``` (or other GAN output).​
+- Trains a second model and saves ```checkpoints/siamese_augmented.pth```.​
 
 ### 5) Evaluation & Performance Assessment
 Metrics:
