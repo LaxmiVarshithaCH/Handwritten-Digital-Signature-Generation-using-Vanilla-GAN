@@ -173,7 +173,11 @@ python src/train_gan_generic.py
 - Samples: ```samples/generic/```
 - Generator: ```checkpoints/generic/generator.pth```
 
-<img width="530" height="68" alt="image" src="https://github.com/user-attachments/assets/1eafefd6-1fdc-4225-8f28-69bcabda36db" />[epoch_300]
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1eafefd6-1fdc-4225-8f28-69bcabda36db" width="530" height="68" alt="epoch_300"/>
+  <br>
+  <em>Figure: Sample at epoch 300</em>
+</p>
 
 **User-Specific GAN**
 - One GAN per user
@@ -187,7 +191,11 @@ python src/train_gan_user_specific.py
 - Samples: ```samples/user_specific/```
 - Generators: ```checkpoints/user_specific/user_XX.pth```
 
-<img width="530" height="134" alt="image" src="https://github.com/user-attachments/assets/58fdbd76-6a63-4bf8-8734-00c0e9f4e32e" />[user_01_epoch_150]
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/58fdbd76-6a63-4bf8-8734-00c0e9f4e32e" width="530" height="68" alt="epoch_300"/>
+  <br>
+  <em>Figure: Sample at User_01 epoch 150</em>
+</p>
 
 ### 4) Signature Verification Model
 - **Siamese CNN** implemented in ```siamese_model.py```
@@ -247,12 +255,18 @@ streamlit run src/app.py
 - Select number of signatures (1–50)
 - Preview generated outputs
 
-![Uploading image.png…]() [generic]
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/44d7d874-e650-4bdf-ab15-f2580355c7e6" width="2940" height="1912" alt="Generic-generated signatures"/>
+  <br>
+  <em>Figure: UI output - Generic Generated Signatures</em>
+</p>
 
-![Uploading image.png…]() [user-specific]
-
-
-<img width="530" height="332" alt="image" src="https://github.com/user-attachments/assets/4dc44af9-019d-4b75-a8c6-12e826adc218" />[UI_output]
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4dc44af9-019d-4b75-a8c6-12e826adc218" width="530" height="332" alt="UI output"/>
+  <br>
+  <em>Figure: UI output -<img width="1470" height="956" alt="Screenshot 2026-02-05 at 9 23 09 PM" src="https://github.com/user-attachments/assets/cc3477a6-da1d-4c6f-ba32-c4363d21efaa" />
+ Generated Signatures</em>
+</p>
 
 **FastAPI Service**
 ```bash
