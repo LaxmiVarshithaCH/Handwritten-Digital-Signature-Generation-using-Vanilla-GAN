@@ -176,7 +176,7 @@ python src/train_gan_generic.py
 <p align="center">
   <img src="https://github.com/user-attachments/assets/1eafefd6-1fdc-4225-8f28-69bcabda36db" width="530" height="68" alt="epoch_300"/>
   <br>
-  <em>Figure: Sample at epoch 300</em>
+  <em>Sample at epoch 300</em>
 </p>
 
 **User-Specific GAN**
@@ -194,7 +194,7 @@ python src/train_gan_user_specific.py
 <p align="center">
   <img src="https://github.com/user-attachments/assets/58fdbd76-6a63-4bf8-8734-00c0e9f4e32e" width="530" height="68" alt="epoch_300"/>
   <br>
-  <em>Figure: Sample at User_01 epoch 150</em>
+  <em>Sample at User_01 epoch 150</em>
 </p>
 
 ### 4) Signature Verification Model
@@ -258,14 +258,13 @@ streamlit run src/app.py
 <p align="center">
   <img src="https://github.com/user-attachments/assets/44d7d874-e650-4bdf-ab15-f2580355c7e6" width="2940" height="1912" alt="Generic-generated signatures"/>
   <br>
-  <em>Figure: UI output - Generic Generated Signatures</em>
+  <em>Streamlit UI - Generic Generated Signatures</em>
 </p>
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/4dc44af9-019d-4b75-a8c6-12e826adc218" width="530" height="332" alt="UI output"/>
   <br>
-  <em>Figure: UI output -<img width="1470" height="956" alt="Screenshot 2026-02-05 at 9 23 09 PM" src="https://github.com/user-attachments/assets/cc3477a6-da1d-4c6f-ba32-c4363d21efaa" />
- Generated Signatures</em>
+  <em>UI output - Generated Signatures</em>
 </p>
 
 **FastAPI Service**
