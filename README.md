@@ -173,6 +173,8 @@ python src/train_gan_generic.py
 - Samples: ```samples/generic/```
 - Generator: ```checkpoints/generic/generator.pth```
 
+<img width="530" height="68" alt="image" src="https://github.com/user-attachments/assets/1eafefd6-1fdc-4225-8f28-69bcabda36db" />[epoch_300]
+
 **User-Specific GAN**
 - One GAN per user
 - Initialized from generic generator
@@ -184,6 +186,8 @@ python src/train_gan_user_specific.py
 **Artifacts:**
 - Samples: ```samples/user_specific/```
 - Generators: ```checkpoints/user_specific/user_XX.pth```
+
+<img width="530" height="134" alt="image" src="https://github.com/user-attachments/assets/58fdbd76-6a63-4bf8-8734-00c0e9f4e32e" />[user_01_epoch_150]
 
 ### 4) Signature Verification Model
 - **Siamese CNN** implemented in ```siamese_model.py```
@@ -242,6 +246,13 @@ streamlit run src/app.py
 - Choose Generic or User-Specific GAN
 - Select number of signatures (1–50)
 - Preview generated outputs
+
+![Uploading image.png…]() [generic]
+
+![Uploading image.png…]() [user-specific]
+
+
+<img width="530" height="332" alt="image" src="https://github.com/user-attachments/assets/4dc44af9-019d-4b75-a8c6-12e826adc218" />[UI_output]
 
 **FastAPI Service**
 ```bash
